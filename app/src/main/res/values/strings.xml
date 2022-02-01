@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">My Gallery</string>
+    <string name="main_button_text">Add Photo</string>
+    <string name="main_empty_text">You can add some photos</string>
 </resources>
