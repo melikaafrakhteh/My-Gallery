@@ -29,7 +29,8 @@ class ChooseDialog(
     override fun onStart() {
         super.onStart()
         val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
-        dialog?.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val height = (resources.displayMetrics.heightPixels * 0.35).toInt()
+        dialog?.window?.setLayout(width, height)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
