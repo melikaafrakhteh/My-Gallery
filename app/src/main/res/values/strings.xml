@@ -2,4 +2,7 @@
     <string name="app_name">My Gallery</string>
     <string name="main_button_text">Add Photo</string>
     <string name="main_empty_text">You can add some photos</string>
+    <string name="dialog_title">Add photo from:</string>
+    <string name="dialog_choose_gallery">Gallery</string>
+    <string name="dialog_choose_camera">Camera</string>
 </resources>
