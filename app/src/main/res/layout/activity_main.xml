@@ -41,25 +41,24 @@
         android:paddingBottom="4dp"
         android:text="@string/main_button_text"
         android:textSize="16sp"
+        android:layout_marginBottom="36dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mainRecyclerView"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintVertical_bias="0.131" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mainRecyclerView"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="4dp"
+        android:padding="4dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:layout_constraintBottom_toBottomOf="@+id/mainEmptyListTextTv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mainTitleTv"
-        app:layout_constraintVertical_bias="0.0"
         app:spanCount="2"
-        tools:itemCount="20"
+        tools:itemCount="4"
         tools:listitem="@layout/recycler_item_row" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
