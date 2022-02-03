@@ -107,7 +107,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openGallery() {
-        Toast.makeText(this, "gallery", Toast.LENGTH_SHORT).show()
         getContent.launch("image/*")
     }
 }
