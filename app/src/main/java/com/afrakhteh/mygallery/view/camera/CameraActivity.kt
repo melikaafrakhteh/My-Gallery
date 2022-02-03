@@ -42,9 +42,7 @@ class CameraActivity : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
-    private fun takePhoto(view: View?) {
-        val imageCapture = imageCapture ?: return
-
+    private fun createPhotoUriFormat(): ContentValues {
         val name = SimpleDateFormat(Strings.FILE_FORMAT, Locale.US)
             .format(System.currentTimeMillis())
         val contentValues = ContentValues().apply {
@@ -54,15 +52,22 @@ class CameraActivity : AppCompatActivity() {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
             }
         }
+        return contentValues
+    }
 
-        val outputOptions = ImageCapture.OutputFileOptions
+    private fun createOutPut(): ImageCapture.OutputFileOptions {
+        return ImageCapture.OutputFileOptions
             .Builder(
                 contentResolver,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
+                createPhotoUriFormat()
             )
             .build()
+    }
 
+    private fun takePhoto(view: View?) {
+        val imageCapture = imageCapture ?: return
+        val outputOptions = createOutPut()
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),

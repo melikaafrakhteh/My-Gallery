@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             openCamera()
         } else {
-            requestPermission(
+           requestPermission(
                 Manifest.permission.CAMERA,
                 Numerals.REQUEST_CAMERA_CODE
             )
