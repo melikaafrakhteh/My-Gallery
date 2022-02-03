@@ -1,6 +1,7 @@
 package com.afrakhteh.mygallery.view.main
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -13,6 +14,7 @@ import androidx.core.content.ContextCompat
 import com.afrakhteh.mygallery.constant.Numerals
 import com.afrakhteh.mygallery.databinding.ActivityMainBinding
 import com.afrakhteh.mygallery.model.entity.ImageEntity
+import com.afrakhteh.mygallery.view.camera.CameraActivity
 import com.afrakhteh.mygallery.view.main.adapter.ImageAdapter
 import com.afrakhteh.mygallery.view.main.adapter.SpaceItemDecoration
 import com.afrakhteh.mygallery.view.main.custom.ChooseDialog
@@ -78,7 +80,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             requestPermission(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-            Numerals.REQUEST_READ_STORAGE_CODE)
+                Numerals.REQUEST_READ_STORAGE_CODE
+            )
         }
     }
 
@@ -117,7 +120,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-
+        startActivity(Intent(this, CameraActivity::class.java))
     }
 
     private fun openGallery() {
