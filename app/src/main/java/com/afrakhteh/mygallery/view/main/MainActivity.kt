@@ -19,13 +19,8 @@ class MainActivity : AppCompatActivity() {
 
     private val getContent = registerForActivityResult(
         ActivityResultContracts.GetContent()) { uri: Uri? ->
-        showImage(uri)
-    }
 
-    private fun showImage(uri: Uri?) {
-binding.test.setImageURI(uri)
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
