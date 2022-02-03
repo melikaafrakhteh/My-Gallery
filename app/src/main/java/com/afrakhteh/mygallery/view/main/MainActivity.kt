@@ -1,6 +1,7 @@
 package com.afrakhteh.mygallery.view.main
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -13,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.afrakhteh.mygallery.constant.Numerals
+import com.afrakhteh.mygallery.constant.Strings
 import com.afrakhteh.mygallery.databinding.ActivityMainBinding
 import com.afrakhteh.mygallery.model.entity.ImageEntity
 import com.afrakhteh.mygallery.view.camera.CameraActivity
@@ -32,6 +34,14 @@ class MainActivity : AppCompatActivity() {
     ) { uri: Uri? ->
         addDataToList(uri!!)
     }
+    private val intentLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.getStringExtra(Strings.URI_KEY).let {
+                    addDataToList(it?.toUri())
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,29 +49,33 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         imageAdapter = ImageAdapter(::deleteImageFromList)
-        binding.mainAddImageBtn.setOnClickListener(::chooseImagesResource)
         initialiseView()
+        binding.mainAddImageBtn.setOnClickListener(::chooseImagesResource)
+
+        val cameraUri = intent.extras?.getString("uri") ?: return
+        addDataToList(cameraUri.toUri())
     }
+
     private fun initialiseView() {
         binding.mainRecyclerView.visibility = View.INVISIBLE
         binding.mainRecyclerView.adapter = imageAdapter
         binding.mainRecyclerView.addItemDecoration(SpaceItemDecoration(40))
     }
 
-   private fun initialiseViewWithItemState() {
-       binding.mainEmptyListTextTv.visibility = View.GONE
-       binding.mainRecyclerView.visibility = View.VISIBLE
+    private fun initialiseViewWithItemState() {
+        binding.mainEmptyListTextTv.visibility = View.GONE
+        binding.mainRecyclerView.visibility = View.VISIBLE
 
-       val lparams = binding.mainAddImageBtn.layoutParams as ConstraintLayout.LayoutParams
-       lparams.verticalBias = 0.04f
-       binding.mainAddImageBtn.layoutParams = lparams
+        val lparams = binding.mainAddImageBtn.layoutParams as ConstraintLayout.LayoutParams
+        lparams.verticalBias = 0.04f
+        binding.mainAddImageBtn.layoutParams = lparams
     }
 
     private fun deleteImageFromList(position: Int) {
 
     }
 
-    private fun addDataToList(uri: Uri?){
+    private fun addDataToList(uri: Uri?) {
         imageList.add(ImageEntity(requireNotNull(uri)))
         imageAdapter.submitList(imageList)
         if (imageList.size != 0) {
@@ -76,13 +90,17 @@ class MainActivity : AppCompatActivity() {
     private fun chooseCamera() {
         if (
             hasThisPermissionGranted(Manifest.permission.CAMERA) and
-            hasThisPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            hasThisPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        ) {
             openCamera()
         } else {
             requestPermission(
                 Manifest.permission.CAMERA,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Numerals.REQUEST_CAMERA_CODE
+            )
+            requestPermission(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Numerals.REQUEST_WRITE_STORAGE_CODE
             )
         }
     }
@@ -93,7 +111,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             requestPermission(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                "",
                 Numerals.REQUEST_READ_STORAGE_CODE
             )
         }
@@ -106,11 +123,11 @@ class MainActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun requestPermission(permission: String, secondPermission: String = "", code: Int) {
+    private fun requestPermission(permission: String, code: Int) {
         if (!hasThisPermissionGranted(permission)) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(permission, secondPermission),
+                arrayOf(permission),
                 code
             )
         }
@@ -133,16 +150,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-       startActivity(Intent(this, CameraActivity::class.java))
+        intentLauncher.launch(Intent(this, CameraActivity::class.java))
     }
 
     private fun openGallery() {
         getContent.launch("image/*")
     }
 
-    override fun onResume() {
-        super.onResume()
-        val cameraUri = intent.extras?.getString("uri") ?: return
-        addDataToList(cameraUri.toUri())
-    }
 }
