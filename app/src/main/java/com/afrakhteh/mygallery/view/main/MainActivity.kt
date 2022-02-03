@@ -2,9 +2,11 @@ package com.afrakhteh.mygallery.view.main
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -14,6 +16,16 @@ import com.afrakhteh.mygallery.view.main.custom.ChooseDialog
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    private val getContent = registerForActivityResult(
+        ActivityResultContracts.GetContent()) { uri: Uri? ->
+        showImage(uri)
+    }
+
+    private fun showImage(uri: Uri?) {
+binding.test.setImageURI(uri)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun chooseGallery() {
         if (hasReadStoragePermissionGranted()) {
-            Toast.makeText(this, "gallery", Toast.LENGTH_SHORT).show()
+            openGallery()
         } else {
             requestStoragePermission()
         }
@@ -64,10 +76,15 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == Numerals.REQUEST_READ_STORAGE_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "access", Toast.LENGTH_SHORT).show()
+                openGallery()
             } else {
                 //deny
             }
         }
+    }
+
+    private fun openGallery() {
+        Toast.makeText(this, "gallery", Toast.LENGTH_SHORT).show()
+        getContent.launch("image/*")
     }
 }
