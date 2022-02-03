@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.afrakhteh.mygallery.constant.Numerals
 import com.afrakhteh.mygallery.databinding.ActivityMainBinding
 import com.afrakhteh.mygallery.model.entity.ImageEntity
@@ -29,16 +30,7 @@ class MainActivity : AppCompatActivity() {
     private val getContent = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        imageList.add(ImageEntity(requireNotNull(uri)))
-        imageAdapter.submitList(imageList)
-        if (imageList.size != 0) {
-            binding.mainEmptyListTextTv.visibility = View.GONE
-            binding.mainRecyclerView.visibility = View.VISIBLE
-
-            val lparams = binding.mainAddImageBtn.layoutParams as ConstraintLayout.LayoutParams
-            lparams.verticalBias = 0.04f
-            binding.mainAddImageBtn.layoutParams = lparams
-        }
+        addDataToList(uri!!)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,15 +40,33 @@ class MainActivity : AppCompatActivity() {
 
         imageAdapter = ImageAdapter(::deleteImageFromList)
         binding.mainAddImageBtn.setOnClickListener(::chooseImagesResource)
-
+        initialiseView()
+    }
+    private fun initialiseView() {
         binding.mainRecyclerView.visibility = View.INVISIBLE
         binding.mainRecyclerView.adapter = imageAdapter
         binding.mainRecyclerView.addItemDecoration(SpaceItemDecoration(40))
+    }
 
+   private fun initialiseViewWithItemState() {
+       binding.mainEmptyListTextTv.visibility = View.GONE
+       binding.mainRecyclerView.visibility = View.VISIBLE
+
+       val lparams = binding.mainAddImageBtn.layoutParams as ConstraintLayout.LayoutParams
+       lparams.verticalBias = 0.04f
+       binding.mainAddImageBtn.layoutParams = lparams
     }
 
     private fun deleteImageFromList(position: Int) {
 
+    }
+
+    private fun addDataToList(uri: Uri?){
+        imageList.add(ImageEntity(requireNotNull(uri)))
+        imageAdapter.submitList(imageList)
+        if (imageList.size != 0) {
+            initialiseViewWithItemState()
+        }
     }
 
     private fun chooseImagesResource(view: View?) {
@@ -64,11 +74,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun chooseCamera() {
-        if (hasThisPermissionGranted(Manifest.permission.CAMERA)) {
+        if (
+            hasThisPermissionGranted(Manifest.permission.CAMERA) and
+            hasThisPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             openCamera()
         } else {
             requestPermission(
                 Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Numerals.REQUEST_CAMERA_CODE
             )
         }
@@ -80,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             requestPermission(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
+                "",
                 Numerals.REQUEST_READ_STORAGE_CODE
             )
         }
@@ -92,12 +106,11 @@ class MainActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-
-    private fun requestPermission(permission: String, code: Int) {
+    private fun requestPermission(permission: String, secondPermission: String = "", code: Int) {
         if (!hasThisPermissionGranted(permission)) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(permission),
+                arrayOf(permission, secondPermission),
                 code
             )
         }
@@ -120,10 +133,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-        startActivity(Intent(this, CameraActivity::class.java))
+       startActivity(Intent(this, CameraActivity::class.java))
     }
 
     private fun openGallery() {
         getContent.launch("image/*")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val cameraUri = intent.extras?.getString("uri") ?: return
+        addDataToList(cameraUri.toUri())
     }
 }
