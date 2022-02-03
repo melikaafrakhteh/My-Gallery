@@ -14,4 +14,5 @@ fun Bitmap.resize(maxSize: Int): Bitmap {
         width = (height * ratio).toInt()
     }
     return Bitmap.createScaledBitmap(this, width, height, true)
+
 }
