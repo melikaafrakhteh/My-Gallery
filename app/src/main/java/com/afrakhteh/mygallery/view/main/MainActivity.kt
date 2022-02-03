@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     ) { uri: Uri? ->
         imageList.add(ImageEntity(requireNotNull(uri)))
         imageAdapter.submitList(imageList)
-        if (imageList.size != 0){
+        if (imageList.size != 0) {
             binding.mainEmptyListTextTv.visibility = View.GONE
             binding.mainRecyclerView.visibility = View.VISIBLE
 
@@ -63,30 +62,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun chooseCamera() {
-        Toast.makeText(this, "camera", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun chooseGallery() {
-        if (hasReadStoragePermissionGranted()) {
-            openGallery()
+        if (hasThisPermissionGranted(Manifest.permission.CAMERA)) {
+            openCamera()
         } else {
-            requestStoragePermission()
+            requestPermission(
+                Manifest.permission.CAMERA,
+                Numerals.REQUEST_CAMERA_CODE
+            )
         }
     }
 
-    private fun hasReadStoragePermissionGranted(): Boolean {
+    private fun chooseGallery() {
+        if (hasThisPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            openGallery()
+        } else {
+            requestPermission(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+            Numerals.REQUEST_READ_STORAGE_CODE)
+        }
+    }
+
+    private fun hasThisPermissionGranted(permission: String): Boolean {
         return ContextCompat.checkSelfPermission(
             this,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            permission
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    private fun requestStoragePermission() {
-        if (!hasReadStoragePermissionGranted()) {
+
+    private fun requestPermission(permission: String, code: Int) {
+        if (!hasThisPermissionGranted(permission)) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                Numerals.REQUEST_READ_STORAGE_CODE
+                arrayOf(permission),
+                code
             )
         }
     }
@@ -97,13 +106,18 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == Numerals.REQUEST_READ_STORAGE_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openGallery()
-            } else {
-                //deny
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            when (requestCode) {
+                Numerals.REQUEST_READ_STORAGE_CODE -> openGallery()
+                Numerals.REQUEST_CAMERA_CODE -> openCamera()
             }
+        } else {
+            //deny
         }
+    }
+
+    private fun openCamera() {
+
     }
 
     private fun openGallery() {
