@@ -5,5 +5,7 @@ class Numerals {
        const val REQUEST_READ_STORAGE_CODE = 10
        const val REQUEST_WRITE_STORAGE_CODE = 14
        const val REQUEST_CAMERA_CODE = 12
+
+        const val IMAGE_MAX_SIZE = 1000
     }
 }
