@@ -99,7 +99,11 @@ class MainActivity : AppCompatActivity() {
         val currentList = imageAdapter.currentList.toMutableList()
         currentList.removeAt(position)
         imageAdapter.submitList(currentList)
-        Toast.makeText(applicationContext, getString(R.string.delete_msg), Toast.LENGTH_SHORT)
+        Toast.makeText(
+            applicationContext,
+            getString(R.string.delete_msg),
+            Toast.LENGTH_SHORT
+        )
             .show()
     }
 
@@ -109,45 +113,50 @@ class MainActivity : AppCompatActivity() {
 
     private fun chooseCamera() {
         if (
-            hasThisPermissionGranted(Manifest.permission.CAMERA) and
-            hasThisPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            hasThisPermissionGranted(
+                arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            )
         ) {
             openCamera()
         } else {
             requestPermission(
-                Manifest.permission.CAMERA,
-                Numerals.REQUEST_CAMERA_CODE
-            )
-            requestPermission(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Numerals.REQUEST_WRITE_STORAGE_CODE
+                arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ),
+                Numerals.REQUEST_CAMERA_CODE and Numerals.REQUEST_WRITE_STORAGE_CODE
             )
         }
     }
 
     private fun chooseGallery() {
-        if (hasThisPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+        if (hasThisPermissionGranted(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))) {
             openGallery()
         } else {
             requestPermission(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                 Numerals.REQUEST_READ_STORAGE_CODE
             )
         }
     }
 
-    private fun hasThisPermissionGranted(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            permission
-        ) == PackageManager.PERMISSION_GRANTED
+    private fun hasThisPermissionGranted(permissions: Array<String>): Boolean {
+        return permissions.all {
+            ContextCompat.checkSelfPermission(
+                this,
+                it
+            ) == PackageManager.PERMISSION_GRANTED
+        }
     }
 
-    private fun requestPermission(permission: String, code: Int) {
-        if (!hasThisPermissionGranted(permission)) {
+    private fun requestPermission(permissions: Array<String>, code: Int) {
+        if (!hasThisPermissionGranted(permissions)) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(permission),
+                permissions,
                 code
             )
         }
@@ -159,10 +168,12 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (grantResults.isNotEmpty()
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {
                 Numerals.REQUEST_READ_STORAGE_CODE -> openGallery()
-                Numerals.REQUEST_CAMERA_CODE -> openCamera()
+                Numerals.REQUEST_CAMERA_CODE and Numerals.REQUEST_WRITE_STORAGE_CODE -> openCamera()
             }
         } else {
             //deny

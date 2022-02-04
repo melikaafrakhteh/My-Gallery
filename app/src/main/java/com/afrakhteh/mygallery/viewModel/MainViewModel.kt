@@ -21,4 +21,5 @@ class MainViewModel : ViewModel() {
     fun addNewItemToList(uri: Uri?) {
         imageList.add(ImageEntity(requireNotNull(uri)))
     }
+
 }
