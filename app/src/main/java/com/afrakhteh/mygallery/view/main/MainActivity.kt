@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         binding.mainRecyclerView.apply {
             visibility = View.INVISIBLE
             adapter = imageAdapter
-            addItemDecoration(SpaceItemDecoration(28))
+            addItemDecoration(SpaceItemDecoration(16))
         }
         viewModel.state.observe(this, ::renderList)
         binding.mainAddImageBtn.setOnClickListener(::chooseImagesResource)
