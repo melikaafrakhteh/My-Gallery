@@ -8,4 +8,7 @@
     <string name="take_photo">Take a photo</string>
     <string name="delete_msg">Delete item successfully</string>
     <string name="error_msg">Sorry, cannot reception this photo</string>
+    <string name="No_dialog_msg">No</string>
+    <string name="delete_dialog_yes">Yes</string>
+    <string name="delete_dialog_content">Are you sure?</string>
 </resources>

@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.recyclerview.widget.RecyclerView
 import com.afrakhteh.mygallery.constant.Numerals
 import com.afrakhteh.mygallery.databinding.RecyclerItemRowBinding
+import com.afrakhteh.mygallery.model.entity.ImageEntity
 import com.afrakhteh.mygallery.util.resize
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -18,15 +19,16 @@ import kotlinx.coroutines.launch
 
 class ImageViewHolder(
     private val binding: RecyclerItemRowBinding,
-    private val remove: (Int) -> Unit,
+    private val remove: (ImageEntity) -> Unit,
     private val context: Context
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private var getImageJob: Job? = null
 
-    fun bind() {
+    fun bind(data: ImageEntity) {
+        binding.recyclerItemImageIv.setImageDrawable(null)
         binding.recyclerItemImageDeleteIv.setOnClickListener {
-            remove.invoke(adapterPosition)
+            remove.invoke(data)
         }
     }
 

@@ -19,10 +19,12 @@ import com.afrakhteh.mygallery.R
 import com.afrakhteh.mygallery.constant.Numerals
 import com.afrakhteh.mygallery.constant.Strings
 import com.afrakhteh.mygallery.databinding.ActivityMainBinding
+import com.afrakhteh.mygallery.model.entity.ImageEntity
 import com.afrakhteh.mygallery.view.camera.CameraActivity
 import com.afrakhteh.mygallery.view.main.adapter.ImageAdapter
 import com.afrakhteh.mygallery.view.main.adapter.SpaceItemDecoration
 import com.afrakhteh.mygallery.view.main.custom.ChooseDialog
+import com.afrakhteh.mygallery.view.main.custom.DeleteDialog
 import com.afrakhteh.mygallery.view.main.state.ImageState
 import com.afrakhteh.mygallery.viewModel.MainViewModel
 
@@ -56,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         imageAdapter = ImageAdapter(::deleteImageFromList)
         initialiseEmptyStateView()
         binding.mainRecyclerView.apply {
-            visibility = View.INVISIBLE
+            visibility = View.GONE
             adapter = imageAdapter
             addItemDecoration(SpaceItemDecoration(16))
         }
@@ -91,6 +93,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initialiseEmptyStateView() {
         binding.mainEmptyListTextTv.visibility = View.VISIBLE
+        binding.mainRecyclerView.removeAllViews()
         val lparams = binding.mainAddImageBtn.layoutParams as ConstraintLayout.LayoutParams
         lparams.apply {
             topToBottom = R.id.mainEmptyListTextTv
@@ -111,17 +114,20 @@ class MainActivity : AppCompatActivity() {
         binding.mainAddImageBtn.layoutParams = lparams
     }
 
-    private fun deleteImageFromList(position: Int) {
-        val currentList = imageAdapter.currentList.toMutableList()
-        currentList.removeAt(position)
-        imageAdapter.submitList(currentList)
-        Toast.makeText(
-            applicationContext,
-            getString(R.string.delete_msg),
-            Toast.LENGTH_SHORT
-        )
-            .show()
-        if (currentList.size == 0) initialiseEmptyStateView()
+    private fun deleteImageFromList(data: ImageEntity) {
+        DeleteDialog {
+            viewModel.deleteItemFromList(data)
+            binding.mainRecyclerView.removeAllViewsInLayout()
+            if (viewModel.state.value?.list!!.isEmpty())
+                initialiseEmptyStateView()
+
+            Toast.makeText(
+                applicationContext,
+                getString(R.string.delete_msg),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+            .show(supportFragmentManager, "delete")
     }
 
     private fun chooseImagesResource(view: View?) {
@@ -187,10 +193,14 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults.isNotEmpty()
             && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+        ) {
             when (requestCode) {
                 Numerals.REQUEST_READ_STORAGE_CODE -> openGallery()
-                Numerals.REQUEST_CAMERA_CODE and Numerals.REQUEST_WRITE_STORAGE_CODE -> openCamera()
+                Numerals.REQUEST_CAMERA_CODE and Numerals.REQUEST_WRITE_STORAGE_CODE -> {
+                    if (grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        openCamera()
+                    }
+                }
             }
         } else {
             //deny
@@ -204,6 +214,5 @@ class MainActivity : AppCompatActivity() {
     private fun openGallery() {
         getContent.launch("image/*")
     }
-
 
 }

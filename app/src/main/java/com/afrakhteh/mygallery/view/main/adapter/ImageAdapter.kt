@@ -7,7 +7,7 @@ import com.afrakhteh.mygallery.databinding.RecyclerItemRowBinding
 import com.afrakhteh.mygallery.model.entity.ImageEntity
 
 class ImageAdapter(
-    private val remove: (Int) -> Unit
+    private val remove: (ImageEntity) -> Unit
 ) : ListAdapter<ImageEntity, ImageViewHolder>(ImageDiffCallBack()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
@@ -17,7 +17,7 @@ class ImageAdapter(
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        holder.bind()
+        holder.bind(getItem(holder.adapterPosition))
     }
 
     override fun onViewAttachedToWindow(holder: ImageViewHolder) {
