@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Size
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -84,13 +85,13 @@ class CameraActivity : AppCompatActivity() {
                         onImageSaved(output: ImageCapture.OutputFileResults) {
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    sendUri(output.savedUri)
+                    sendUri(requireNotNull(output.savedUri))
                 }
             }
         )
     }
 
-    private fun sendUri(uri: Uri?) {
+    private fun sendUri(uri: Uri) {
         Intent(this, MainActivity::class.java).apply {
             putExtra(Strings.URI_KEY, uri.toString())
             setResult(Activity.RESULT_OK, this)
@@ -108,7 +109,10 @@ class CameraActivity : AppCompatActivity() {
 
     private fun bindToLifeCycle(cameraProviderFuture: ListenableFuture<ProcessCameraProvider>) {
         val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-        imageCapture = ImageCapture.Builder().build()
+        imageCapture = ImageCapture.Builder()
+            .setTargetResolution(Size(1000,1000))
+            .setJpegQuality(90)
+            .build()
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
         try {
             cameraProvider.unbindAll()

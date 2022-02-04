@@ -22,8 +22,9 @@ class MainViewModel : ViewModel() {
     private var imageList: MutableList<ImageEntity> = mutableListOf()
 
     fun fetchAllImages() {
-        itemJob = CoroutineScope(Dispatchers.IO).launch {
-            pState.postValue(ImageState(list = imageList))
+        itemJob = CoroutineScope(Dispatchers.Main).launch {
+             pState.postValue(ImageState(list = imageList))
+
         }
     }
 
@@ -34,7 +35,6 @@ class MainViewModel : ViewModel() {
     fun deleteItemFromList(data: ImageEntity) {
         deleteJob = CoroutineScope(Dispatchers.Main).launch {
             imageList.remove(data)
-          //  pState.postValue(ImageState(list = imageList))
            pState.postValue(pState.value?.copy(list = imageList as List<ImageEntity>))
         }
     }

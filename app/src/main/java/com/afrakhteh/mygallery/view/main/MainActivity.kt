@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import com.afrakhteh.mygallery.R
 import com.afrakhteh.mygallery.constant.Numerals
 import com.afrakhteh.mygallery.constant.Strings
@@ -44,8 +43,8 @@ class MainActivity : AppCompatActivity() {
     private val intentLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                result.data?.getStringExtra(Strings.URI_KEY).let {
-                    viewModel.addNewItemToList(it?.toUri())
+                result.data?.extras?.getString(Strings.URI_KEY).let {
+                    viewModel.addNewItemToList(Uri.parse(it))
                 }
             }
         }
@@ -69,6 +68,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.fetchAllImages()
+
         val number = viewModel.state.value?.list?.size
         if (number == 0) {
             initialiseEmptyStateView()
@@ -93,13 +93,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun initialiseEmptyStateView() {
         binding.mainEmptyListTextTv.visibility = View.VISIBLE
-        binding.mainRecyclerView.removeAllViews()
         val lparams = binding.mainAddImageBtn.layoutParams as ConstraintLayout.LayoutParams
         lparams.apply {
             topToBottom = R.id.mainEmptyListTextTv
             verticalBias = 0.185f
         }
         binding.mainAddImageBtn.layoutParams = lparams
+       // binding.mainRecyclerView.removeAllViews()
     }
 
     private fun initialiseWithItemStateView() {
