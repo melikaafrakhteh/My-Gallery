@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -18,29 +19,31 @@ import com.afrakhteh.mygallery.R
 import com.afrakhteh.mygallery.constant.Numerals
 import com.afrakhteh.mygallery.constant.Strings
 import com.afrakhteh.mygallery.databinding.ActivityMainBinding
-import com.afrakhteh.mygallery.model.entity.ImageEntity
 import com.afrakhteh.mygallery.view.camera.CameraActivity
 import com.afrakhteh.mygallery.view.main.adapter.ImageAdapter
 import com.afrakhteh.mygallery.view.main.adapter.SpaceItemDecoration
 import com.afrakhteh.mygallery.view.main.custom.ChooseDialog
+import com.afrakhteh.mygallery.view.main.state.ImageState
+import com.afrakhteh.mygallery.viewModel.MainViewModel
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var imageAdapter: ImageAdapter
-    private var imageList: ArrayList<ImageEntity> = arrayListOf()
+
+    private val viewModel: MainViewModel by viewModels()
 
     private val getContent = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        addDataToList(uri!!)
+        viewModel.addNewItemToList(uri)
     }
     private val intentLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.getStringExtra(Strings.URI_KEY).let {
-                    addDataToList(it?.toUri())
+                    viewModel.addNewItemToList(it?.toUri())
                 }
             }
         }
@@ -52,6 +55,26 @@ class MainActivity : AppCompatActivity() {
 
         imageAdapter = ImageAdapter(::deleteImageFromList)
         initialiseView()
+        viewModel.state.observe(this, ::renderList)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchAllImages()
+    }
+
+    private fun renderList(imageState: ImageState?) {
+        imageState?.errorMessage?.ifNotHandled {
+            Toast.makeText(applicationContext, getString(R.string.error_msg), Toast.LENGTH_SHORT)
+                .show()
+        }
+        val number = imageState?.list?.size
+        imageAdapter.submitList(imageState?.list)
+        if (number == 0) {
+            initialiseView()
+        } else {
+            initialiseViewWithItemState()
+        }
     }
 
     private fun initialiseView() {
@@ -78,14 +101,6 @@ class MainActivity : AppCompatActivity() {
         imageAdapter.submitList(currentList)
         Toast.makeText(applicationContext, getString(R.string.delete_msg), Toast.LENGTH_SHORT)
             .show()
-    }
-
-    private fun addDataToList(uri: Uri?) {
-        imageList.add(ImageEntity(requireNotNull(uri)))
-        imageAdapter.submitList(imageList)
-        if (imageList.size != 0) {
-            initialiseViewWithItemState()
-        }
     }
 
     private fun chooseImagesResource(view: View?) {
@@ -161,5 +176,6 @@ class MainActivity : AppCompatActivity() {
     private fun openGallery() {
         getContent.launch("image/*")
     }
+
 
 }

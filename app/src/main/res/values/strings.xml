@@ -7,4 +7,5 @@
     <string name="dialog_choose_camera">Camera</string>
     <string name="take_photo">Take a photo</string>
     <string name="delete_msg">Delete item successfully</string>
+    <string name="error_msg">Sorry, cannot reception this photo</string>
 </resources>
