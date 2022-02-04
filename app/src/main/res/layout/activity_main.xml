@@ -41,12 +41,13 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.463" />
+                app:layout_constraintVertical_bias="0.332" />
 
             <Button
                 android:id="@+id/mainAddImageBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
                 android:background="@drawable/button_shape"
                 android:paddingStart="36dp"
                 android:paddingTop="4dp"
@@ -54,12 +55,11 @@
                 android:paddingBottom="4dp"
                 android:text="@string/main_button_text"
                 android:textSize="16sp"
-                android:layout_marginBottom="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/mainEmptyListTextTv"
-                app:layout_constraintVertical_bias="0.139" />
+                app:layout_constraintVertical_bias="0.185" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/mainRecyclerView"

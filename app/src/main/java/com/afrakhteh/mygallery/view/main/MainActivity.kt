@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         val lparams = binding.mainAddImageBtn.layoutParams as ConstraintLayout.LayoutParams
         lparams.apply {
             topToBottom = R.id.mainEmptyListTextTv
-            verticalBias = 0.139f
+            verticalBias = 0.185f
         }
         binding.mainAddImageBtn.layoutParams = lparams
     }
