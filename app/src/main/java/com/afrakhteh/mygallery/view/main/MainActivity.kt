@@ -7,12 +7,14 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import com.afrakhteh.mygallery.R
 import com.afrakhteh.mygallery.constant.Numerals
 import com.afrakhteh.mygallery.constant.Strings
 import com.afrakhteh.mygallery.databinding.ActivityMainBinding
@@ -72,7 +74,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun deleteImageFromList(position: Int) {
-
+        val currentList =  imageAdapter.currentList.toMutableList()
+        currentList.removeAt(position)
+        imageAdapter.submitList(currentList)
+        Toast.makeText(applicationContext,getString(R.string.delete_msg), Toast.LENGTH_SHORT).show()
     }
 
     private fun addDataToList(uri: Uri?) {
@@ -94,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             openCamera()
         } else {
-           requestPermission(
+            requestPermission(
                 Manifest.permission.CAMERA,
                 Numerals.REQUEST_CAMERA_CODE
             )

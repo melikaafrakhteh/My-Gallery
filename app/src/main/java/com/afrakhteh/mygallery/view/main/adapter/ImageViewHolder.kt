@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.recyclerview.widget.RecyclerView
+import com.afrakhteh.mygallery.constant.Numerals
 import com.afrakhteh.mygallery.databinding.RecyclerItemRowBinding
 import com.afrakhteh.mygallery.util.resize
 import com.bumptech.glide.Glide
@@ -40,9 +41,10 @@ class ImageViewHolder(
                                 transition: Transition<in Bitmap>?
                             ) {
                                 binding.recyclerItemImageIv.setImageBitmap(
-                                    resource.resize(1000)
+                                    resource.resize(Numerals.IMAGE_MAX_SIZE)
                                 )
                             }
+
                             override fun onLoadCleared(placeholder: Drawable?) {}
                         }
                     )
