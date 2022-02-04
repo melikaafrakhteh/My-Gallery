@@ -52,14 +52,15 @@ class MainActivity : AppCompatActivity() {
 
         imageAdapter = ImageAdapter(::deleteImageFromList)
         initialiseView()
-        binding.mainAddImageBtn.setOnClickListener(::chooseImagesResource)
-
     }
 
     private fun initialiseView() {
-        binding.mainRecyclerView.visibility = View.INVISIBLE
-        binding.mainRecyclerView.adapter = imageAdapter
-        binding.mainRecyclerView.addItemDecoration(SpaceItemDecoration(40))
+        binding.mainRecyclerView.apply {
+            visibility = View.INVISIBLE
+            adapter = imageAdapter
+            addItemDecoration(SpaceItemDecoration(40))
+        }
+        binding.mainAddImageBtn.setOnClickListener(::chooseImagesResource)
     }
 
     private fun initialiseViewWithItemState() {
@@ -72,10 +73,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun deleteImageFromList(position: Int) {
-        val currentList =  imageAdapter.currentList.toMutableList()
+        val currentList = imageAdapter.currentList.toMutableList()
         currentList.removeAt(position)
         imageAdapter.submitList(currentList)
-        Toast.makeText(applicationContext,getString(R.string.delete_msg), Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, getString(R.string.delete_msg), Toast.LENGTH_SHORT)
+            .show()
     }
 
     private fun addDataToList(uri: Uri?) {
