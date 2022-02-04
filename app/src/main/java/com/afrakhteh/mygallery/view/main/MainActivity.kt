@@ -54,13 +54,25 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         imageAdapter = ImageAdapter(::deleteImageFromList)
-        initialiseView()
+        initialiseEmptyStateView()
+        binding.mainRecyclerView.apply {
+            visibility = View.INVISIBLE
+            adapter = imageAdapter
+            addItemDecoration(SpaceItemDecoration(28))
+        }
         viewModel.state.observe(this, ::renderList)
+        binding.mainAddImageBtn.setOnClickListener(::chooseImagesResource)
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.fetchAllImages()
+        val number = viewModel.state.value?.list?.size
+        if (number == 0) {
+            initialiseEmptyStateView()
+        } else {
+            initialiseWithItemStateView()
+        }
     }
 
     private fun renderList(imageState: ImageState?) {
@@ -71,27 +83,31 @@ class MainActivity : AppCompatActivity() {
         val number = imageState?.list?.size
         imageAdapter.submitList(imageState?.list)
         if (number == 0) {
-            initialiseView()
+            initialiseEmptyStateView()
         } else {
-            initialiseViewWithItemState()
+            initialiseWithItemStateView()
         }
     }
 
-    private fun initialiseView() {
-        binding.mainRecyclerView.apply {
-            visibility = View.INVISIBLE
-            adapter = imageAdapter
-            addItemDecoration(SpaceItemDecoration(40))
+    private fun initialiseEmptyStateView() {
+        binding.mainEmptyListTextTv.visibility = View.VISIBLE
+        val lparams = binding.mainAddImageBtn.layoutParams as ConstraintLayout.LayoutParams
+        lparams.apply {
+            topToBottom = R.id.mainEmptyListTextTv
+            verticalBias = 0.139f
         }
-        binding.mainAddImageBtn.setOnClickListener(::chooseImagesResource)
+        binding.mainAddImageBtn.layoutParams = lparams
     }
 
-    private fun initialiseViewWithItemState() {
+    private fun initialiseWithItemStateView() {
         binding.mainEmptyListTextTv.visibility = View.GONE
         binding.mainRecyclerView.visibility = View.VISIBLE
 
         val lparams = binding.mainAddImageBtn.layoutParams as ConstraintLayout.LayoutParams
-        lparams.verticalBias = 0.04f
+        lparams.apply {
+            topToBottom = R.id.mainRecyclerView
+            verticalBias = 0.04f
+        }
         binding.mainAddImageBtn.layoutParams = lparams
     }
 
@@ -105,6 +121,7 @@ class MainActivity : AppCompatActivity() {
             Toast.LENGTH_SHORT
         )
             .show()
+        if (currentList.size == 0) initialiseEmptyStateView()
     }
 
     private fun chooseImagesResource(view: View?) {
