@@ -54,8 +54,6 @@ class MainActivity : AppCompatActivity() {
         initialiseView()
         binding.mainAddImageBtn.setOnClickListener(::chooseImagesResource)
 
-        val cameraUri = intent.extras?.getString("uri") ?: return
-        addDataToList(cameraUri.toUri())
     }
 
     private fun initialiseView() {
