@@ -16,6 +16,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
+
 
 class ImageViewHolder(
     private val binding: RecyclerItemRowBinding,
@@ -36,12 +38,14 @@ class ImageViewHolder(
         getImageJob = CoroutineScope(Dispatchers.Main).launch {
             try {
                 Glide.with(context).asBitmap().load(uri)
-                    .encodeQuality(90).into(
+                    .into(
                         object : CustomTarget<Bitmap>() {
                             override fun onResourceReady(
                                 resource: Bitmap,
                                 transition: Transition<in Bitmap>?
                             ) {
+                                val out = ByteArrayOutputStream()
+                               resource.compress(Bitmap.CompressFormat.JPEG, 90, out)
                                 binding.recyclerItemImageIv.setImageBitmap(
                                     resource.resize(Numerals.IMAGE_MAX_SIZE)
                                 )

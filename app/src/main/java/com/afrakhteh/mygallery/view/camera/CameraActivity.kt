@@ -83,8 +83,6 @@ class CameraActivity : AppCompatActivity() {
 
                 override fun
                         onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     sendUri(requireNotNull(output.savedUri))
                 }
             }
@@ -101,7 +99,6 @@ class CameraActivity : AppCompatActivity() {
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
         cameraProviderFuture.addListener({
             bindToLifeCycle(cameraProviderFuture)
         }, ContextCompat.getMainExecutor(this))
@@ -110,7 +107,7 @@ class CameraActivity : AppCompatActivity() {
     private fun bindToLifeCycle(cameraProviderFuture: ListenableFuture<ProcessCameraProvider>) {
         val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
         imageCapture = ImageCapture.Builder()
-            .setTargetResolution(Size(1000,1000))
+            .setTargetResolution(Size(1000, 1000))
             .setJpegQuality(90)
             .build()
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA

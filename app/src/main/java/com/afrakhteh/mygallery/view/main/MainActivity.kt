@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.extras?.getString(Strings.URI_KEY).let {
                     viewModel.addNewItemToList(Uri.parse(it))
+                    Toast.makeText(applicationContext,"$it", Toast.LENGTH_SHORT).show()
                 }
             }
         }

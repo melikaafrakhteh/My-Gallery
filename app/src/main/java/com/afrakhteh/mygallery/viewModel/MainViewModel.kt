@@ -22,7 +22,7 @@ class MainViewModel : ViewModel() {
     private var imageList: MutableList<ImageEntity> = mutableListOf()
 
     fun fetchAllImages() {
-        itemJob = CoroutineScope(Dispatchers.Main).launch {
+        itemJob = CoroutineScope(Dispatchers.IO).launch {
              pState.postValue(ImageState(list = imageList))
 
         }
