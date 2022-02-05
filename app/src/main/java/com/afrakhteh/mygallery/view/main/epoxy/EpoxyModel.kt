@@ -7,6 +7,8 @@ import com.afrakhteh.mygallery.R.layout
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 
 
 @EpoxyModelClass(layout = layout.item_row)
@@ -14,12 +16,15 @@ abstract class EpoxyModel : EpoxyModelWithHolder<Holder>() {
 
     @EpoxyAttribute
     lateinit var imageUrl: Uri
+
     @EpoxyAttribute
     lateinit var deleteListener: () -> Unit
 
     override fun bind(holder: Holder) {
-        holder.imageView.setImageURI(imageUrl)
-        holder.imageDelete.setOnClickListener{ deleteListener.invoke()}
+        Glide.with(holder.imageView).load(imageUrl).encodeQuality(90)
+            .apply(RequestOptions.overrideOf(1000, 1000))
+            .into(holder.imageView)
+        holder.imageDelete.setOnClickListener { deleteListener.invoke() }
     }
 
 }
