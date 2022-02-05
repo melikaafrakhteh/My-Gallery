@@ -20,10 +20,9 @@ import com.afrakhteh.mygallery.constant.Strings
 import com.afrakhteh.mygallery.databinding.ActivityMainBinding
 import com.afrakhteh.mygallery.model.entity.ImageEntity
 import com.afrakhteh.mygallery.view.camera.CameraActivity
-import com.afrakhteh.mygallery.view.main.adapter.ImageAdapter
-import com.afrakhteh.mygallery.view.main.adapter.SpaceItemDecoration
 import com.afrakhteh.mygallery.view.main.custom.ChooseDialog
 import com.afrakhteh.mygallery.view.main.custom.DeleteDialog
+import com.afrakhteh.mygallery.view.main.epoxy.EpoxyController
 import com.afrakhteh.mygallery.view.main.state.ImageState
 import com.afrakhteh.mygallery.viewModel.MainViewModel
 
@@ -31,7 +30,7 @@ import com.afrakhteh.mygallery.viewModel.MainViewModel
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var imageAdapter: ImageAdapter
+    private lateinit var controller: EpoxyController
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -55,13 +54,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        imageAdapter = ImageAdapter(::deleteImageFromList)
-        initialiseEmptyStateView()
+
+        controller = EpoxyController(::deleteImageFromList)
         binding.mainRecyclerView.apply {
             visibility = View.GONE
-            adapter = imageAdapter
-            addItemDecoration(SpaceItemDecoration(16))
+            adapter = controller.adapter
+
         }
+        initialiseEmptyStateView()
+
         viewModel.state.observe(this, ::renderList)
         binding.mainAddImageBtn.setOnClickListener(::chooseImagesResource)
     }
@@ -84,7 +85,7 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
         val number = imageState?.list?.size
-        imageAdapter.submitList(imageState?.list)
+        controller.setData(imageState?.list)
         if (number == 0) {
             initialiseEmptyStateView()
         } else {
