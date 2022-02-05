@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         controller = EpoxyController(::deleteImageFromList)
         binding.mainRecyclerView.apply {
             visibility = View.GONE
